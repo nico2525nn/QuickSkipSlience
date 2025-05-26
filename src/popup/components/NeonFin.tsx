@@ -1,7 +1,7 @@
+import demoImage from "data-base64:~assets/neonfin.png"
 import React from "react"
 import { X } from "react-feather"
 
-import demoImage from "../../../assets/neonfin.png"
 import "./NeonFin.scss"
 
 const shouldHide = localStorage.getItem("hideNeonFin") === "yes"
