@@ -1,5 +1,5 @@
-import one from "data-base64:~assets/screenShare/firefox-1.png"
-import two from "data-base64:~assets/screenShare/firefox-2.png"
+import one from "data-base64:~../assets/screenShare/firefox-1.png"
+import two from "data-base64:~../assets/screenShare/firefox-2.png"
 
 const firefoxInstructions = [
   <>

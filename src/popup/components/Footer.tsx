@@ -1,4 +1,4 @@
-import bmcLogo from "data-base64:~assets/bmc.png"
+import bmcLogo from "data-base64:~../assets/bmc.png"
 import React from "react"
 
 import trackEvent from "../../shared/analytics"

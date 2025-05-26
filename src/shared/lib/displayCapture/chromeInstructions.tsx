@@ -1,5 +1,5 @@
-import one from "data-base64:~assets/screenShare/chrome-1.png"
-import two from "data-base64:~assets/screenShare/chrome-2.png"
+import one from "data-base64:~../assets/screenShare/chrome-1.png"
+import two from "data-base64:~../assets/screenShare/chrome-2.png"
 
 const chromeInstructions = [
   <>

@@ -1,5 +1,5 @@
 import { usePlasmoState } from "@vantezzen/plasmo-state"
-import icon from "data-base64:~assets/icon512.png"
+import icon from "data-base64:~../assets/icon512.png"
 import "fontsource-poppins"
 import "fontsource-poppins/600.css"
 import React, { Component } from "react"

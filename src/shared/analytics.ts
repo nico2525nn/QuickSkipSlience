@@ -8,7 +8,7 @@ import debug from "./debug"
  */
 export function setupAnalytics() {
   const sa = document.createElement("script")
-  sa.src = "/src/assets/external/simpleanalytics.js"
+  sa.src = "/assets/external/simpleanalytics.js"
   sa.id = "simpleanalytics"
   sa.async = true
   sa.defer = true

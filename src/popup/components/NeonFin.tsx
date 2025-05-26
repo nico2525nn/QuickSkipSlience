@@ -1,4 +1,4 @@
-import demoImage from "data-base64:~assets/neonfin.png"
+import demoImage from "data-base64:~../assets/neonfin.png"
 import React from "react"
 import { X } from "react-feather"
 

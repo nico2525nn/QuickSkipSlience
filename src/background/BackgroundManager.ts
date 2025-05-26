@@ -117,7 +117,7 @@ export default class BackgroundManager {
     browser.pageAction.show(tabId)
     browser.pageAction.setIcon({
       tabId,
-      path: "src/assets/img/icon-32.png"
+      path: "assets/img/icon-32.png"
     })
   }
 }

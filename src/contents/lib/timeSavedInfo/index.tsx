@@ -27,7 +27,7 @@ export default class TimeSavedInfo extends Component<InfoProps> {
       <div className="skip-silence-saved-info">
         <div className="skip-silence-saved-info-logo">
           <img
-            src={browser.runtime.getURL("/src/assets/img/icon-128.png")}
+            src={browser.runtime.getURL("/assets/img/icon-128.png")}
             style={{
               width: 25,
               height: 25

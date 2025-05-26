@@ -1,4 +1,4 @@
-import plusIcon from "data-base64:~assets/icon-plus.png"
+import plusIcon from "data-base64:~../assets/icon-plus.png"
 import React from "react"
 import { useState } from "react"
 import browser from "webextension-polyfill"

@@ -1,4 +1,4 @@
-import icon from "data-base64:~assets/icon512.png"
+import icon from "data-base64:~../assets/icon512.png"
 import React from "react"
 
 import __ from "../../shared/i18n"
