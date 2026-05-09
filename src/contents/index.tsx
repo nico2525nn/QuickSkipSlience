@@ -10,8 +10,10 @@ import browser from "webextension-polyfill"
 
 import getState, { AnalyserType } from "~shared/state"
 
-import { supportsTabCapture } from "../shared/platform"
-import setupOnPageSkipperContent from "./lib/browserSetup/onPage"
+import { isMv3, supportsTabCapture } from "../shared/platform"
+import setupOnPageSkipperContent, {
+  setupTabCaptureInContentScript
+} from "./lib/browserSetup/onPage"
 import setupBrowserContent from "./lib/browserSetup/shared"
 import Bar from "./lib/command-bar/Bar"
 import "./lib/content.styles.css"
@@ -31,12 +33,31 @@ state.once("ready", () => {
   if (state.current.analyserType !== AnalyserType.tabCapture) {
     debug("Using on-page analyser")
     setupOnPageSkipperContent(state)
+  } else if (isMv3) {
+    // MV3: tabCaptureはコンテンツスクリプトで処理（バックグラウンドからstreamIdを受け取る）
+    debug("MV3: Using tabCapture in content script")
+    setupMv3TabCaptureListener(state)
+    browser.runtime.sendMessage({ command: "request-activation" })
   } else {
+    // MV2: tabCaptureはバックグラウンドで処理
+    debug("MV2: Delegating tabCapture to background")
     browser.runtime.sendMessage({ command: "request-activation" })
   }
 
   setupKeyboardShortcuts(state)
 })
+
+/**
+ * MV3: バックグラウンドから送られてくるtabCaptureのstreamIdを待ち受ける
+ */
+function setupMv3TabCaptureListener(state: ReturnType<typeof getState>) {
+  browser.runtime.onMessage.addListener((request) => {
+    if (request.command === "tabCapture-stream-id" && request.streamId) {
+      debug("MV3: Received tab capture stream ID from background")
+      setupTabCaptureInContentScript(state, request.streamId)
+    }
+  })
+}
 
 export default () => {
   const config = state

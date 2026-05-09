@@ -42,10 +42,14 @@ export default class SilenceSkipper {
    *
    * @param config Config Provider to use
    * @param mediaElement If provided the mediaelement to inspect - otherwise tabCapture will be used
+   * @param preObtainedStream MV3: If provided, use this stream instead of calling tabCapture (for content script tabCapture)
    */
-  constructor(config: TabState, mediaElement?: MediaElement) {
+  constructor(config: TabState, mediaElement?: MediaElement, preObtainedStream?: MediaStream) {
     this.config = config
     this.element = mediaElement
+    if (preObtainedStream) {
+      this.tabCaptureStream = preObtainedStream
+    }
 
     // Setup dependencies
     this.dynamicThresholdCalculator = new DynamicThresholdCalculator(config)
@@ -116,7 +120,7 @@ export default class SilenceSkipper {
    * @param data Additional data to send (optional)
    */
   _sendCommand(command: String, data: Object = {}) {
-    browser.runtime.sendMessage({ command, ...data }).catch(() => {})
+    browser.runtime.sendMessage({ command, ...data }).catch(() => { })
   }
 
   destroy() {

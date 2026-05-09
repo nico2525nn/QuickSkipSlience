@@ -12,6 +12,17 @@ export default function createAudioContextSecure(): Promise<AudioContext> {
     if (audioContext.state === 'suspended') {
       console.log('Skip Silence: Audio context is suspended, trying to resume');
 
+      if (typeof document === 'undefined') {
+        if (typeof chrome !== 'undefined' && chrome.offscreen) {
+          chrome.offscreen.createDocument({
+            url: 'offscreen.html',
+            reasons: ['AUDIO_PLAYBACK'],
+            justification: 'Resume AudioContext'
+          }).catch(() => {})
+        }
+        return
+      }
+
       const resumeElement = document.createElement('div');
       resumeElement.setAttribute('style', 'position:absolute;z-index:999999;top:0;left:0;width:100vw;height:100vh;background-color:white;display:flex;justify-content:center;align-items:center;color: #212121;flex-direction: column;cursor:pointer;isolation: isolate;');
       resumeElement.innerHTML = `

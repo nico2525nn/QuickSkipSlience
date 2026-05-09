@@ -1,7 +1,7 @@
 import debugging from "debug"
 import browser from "webextension-polyfill"
 
-import { supportsTabCapture } from "~shared/platform"
+import { isMv3, supportsTabCapture } from "~shared/platform"
 import { AnalyserType } from "~shared/state"
 
 import createAudioContextSecure from "./AudioContext"
@@ -11,9 +11,34 @@ import getDisplayCapture from "./displayCapture/getDisplayCapture"
 const debug = debugging("skip-silence:contents:lib:Utils")
 
 const getTabAudioCapture = (): Promise<MediaStream | null> => {
+  if (isMv3) {
+    return Promise.resolve(null)
+  }
   return new Promise((resolve) => {
     chrome.tabCapture.capture({ audio: true, video: false }, resolve)
   })
+}
+
+/**
+ * MV3: コンテンツスクリプトでtabCaptureのストリームを取得する
+ * バックグラウンドのService Workerから受け取ったstreamIdを使用
+ */
+export async function getTabCaptureStreamInContentScript(
+  streamId: string
+): Promise<MediaStream> {
+  debug("Getting tab capture stream in content script with stream ID", streamId)
+  // chrome.tabCaptureのstreamIdを使ってgetUserMediaでストリームを取得
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      mandatory: {
+        chromeMediaSource: "tab",
+        chromeMediaSourceId: streamId
+      }
+    } as any,
+    video: false
+  })
+  debug("Got tab capture stream")
+  return stream
 }
 
 async function getAudioSource(skipper: SilenceSkipper) {
@@ -27,6 +52,15 @@ async function getAudioSource(skipper: SilenceSkipper) {
   if (analyserType === AnalyserType.tabCapture && supportsTabCapture) {
     debug("Creating audio source from tab capture")
 
+    // MV3: 事前に取得したstreamを使用
+    if (isMv3 && skipper.tabCaptureStream) {
+      debug("Using pre-obtained tab capture stream (MV3)")
+      return skipper.audioContext.createMediaStreamSource(
+        skipper.tabCaptureStream
+      )
+    }
+
+    // MV2: バックグラウンドで直接tabCapture
     skipper.tabCaptureStream = await getTabAudioCapture()
     if (!skipper.tabCaptureStream) {
       debug("No stream found")

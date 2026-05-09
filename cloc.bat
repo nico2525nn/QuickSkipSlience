@@ -1,0 +1,1 @@
+cloc . --exclude-dir=node_modules,dist,build,.next,.nuxt,.cache,coverage

@@ -11,10 +11,12 @@
     "url": "https://github.com/vantezzen/skip-silence.git"
   },
   "scripts": {
-    "dev": "plasmo dev --target=chrome-mv2",
+    "dev": "plasmo dev --target=chrome-mv3",
+    "dev:mv2": "plasmo dev --target=chrome-mv2",
     "dev:mv3": "plasmo dev --target=chrome-mv3",
     "dev:firefox": "plasmo dev --target=firefox-mv2",
-    "build": "plasmo build --target=chrome-mv2 --zip",
+    "build": "plasmo build --target=chrome-mv3 --zip",
+    "build:mv2": "plasmo build --target=chrome-mv2 --zip",
     "build:mv3": "plasmo build --target=chrome-mv3 --zip",
     "build:firefox": "plasmo build --target=firefox-mv2 --zip"
   },
@@ -27,7 +29,7 @@
     "fontsource-poppins": "^4.0.0",
     "intro.js": "^5.1.0",
     "intro.js-react": "^0.6.0",
-    "plasmo": "0.90.5",
+    "plasmo": "^0.90.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-feather": "^2.0.10",
@@ -68,6 +70,13 @@
       "tabCapture"
     ],
     "default_locale": "en",
+    "manifest_version": 3,
+    "web_accessible_resources": [
+      {
+        "resources": ["assets/external/*"],
+        "matches": ["<all_urls>"]
+      }
+    ],
     "browser_specific_settings": {
       "gecko": {
         "id": "skip-silence@vantezzen.io"

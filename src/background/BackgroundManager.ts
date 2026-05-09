@@ -1,6 +1,7 @@
 import { StateEnvironment } from "@vantezzen/plasmo-state"
 import browser from "webextension-polyfill"
 
+import { isMv3 } from "~shared/platform"
 import { AnalyserType, TabState } from "~shared/state"
 import getState from "~shared/state"
 
@@ -34,9 +35,43 @@ export default class BackgroundManager {
   private attachToTabsRequestingActivation() {
     browser.runtime.onMessage.addListener((request, sender) => {
       if (request.command === "request-activation") {
-        this.attachToTab(sender.tab!.id!)
+        if (isMv3) {
+          return this.handleMv3Activation(sender.tab!.id!)
+        } else {
+          this.attachToTab(sender.tab!.id!)
+        }
       }
     })
+  }
+
+  /**
+   * MV3: バックグラウンドでtabCaptureのストリームIDを取得し、
+   * コンテンツスクリプトに送信する
+   */
+  private async handleMv3Activation(tabId: number) {
+    debug("MV3: Handling activation for tab", tabId)
+    try {
+      const streamId = await new Promise<string>((resolve, reject) => {
+        chrome.tabCapture.getMediaStreamId(
+          { consumerTabId: tabId },
+          (capturedStreamId: string) => {
+            if (chrome.runtime.lastError) {
+              reject(chrome.runtime.lastError)
+            } else {
+              resolve(capturedStreamId)
+            }
+          }
+        )
+      })
+      debug("MV3: Got stream ID, sending to content script")
+      await browser.tabs.sendMessage(tabId, {
+        command: "tabCapture-stream-id",
+        streamId
+      })
+      this.attachToTab(tabId)
+    } catch (e) {
+      debug("MV3: Failed to get stream ID", e)
+    }
   }
 
   private attachToTab(tabId: number) {
@@ -45,7 +80,6 @@ export default class BackgroundManager {
       return
     }
 
-    // this.enableBrowserActionForTab(tabId)
     this.setupTabReferenceForTabId(tabId)
     this.listenForTabRemovedEvent(tabId)
   }
@@ -80,7 +114,11 @@ export default class BackgroundManager {
 
     this.tabReferences[tabId]!.state.addListener("change", (key) => {
       if (key !== "*") return
-      this.createOrDestroySkipperForTab(tabId)
+      // MV3ではSilenceSkipperはコンテンツスクリプト側で管理されるため、
+      // バックグラウンドでの作成/破棄はMV2のみ
+      if (!isMv3) {
+        this.createOrDestroySkipperForTab(tabId)
+      }
     })
   }
 
@@ -112,12 +150,5 @@ export default class BackgroundManager {
     console.log("Config updated for tab", tabId)
   }
 
-  private enableBrowserActionForTab(tabId: number) {
-    debug("Enabling page action for tab", tabId)
-    browser.pageAction.show(tabId)
-    browser.pageAction.setIcon({
-      tabId,
-      path: "assets/img/icon-32.png"
-    })
-  }
+
 }
