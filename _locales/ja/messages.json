@@ -1,0 +1,140 @@
+{
+  "extensionName": {
+    "message": "QuickSilence"
+  },
+  "extensionDescription": {
+    "message": "動画と音声の無音部分を自動スキップします。"
+  },
+  "toggleEnableCommand": {
+    "message": "現在のタブで QuickSilence を有効/無効にする"
+  },
+  "toggleCommandBarCommand": {
+    "message": "コマンドバーを表示/非表示にする"
+  },
+  "contextMenuToggle": {
+    "message": "QuickSilence を切り替え"
+  },
+  "enable": {
+    "message": "QuickSilence を有効化"
+  },
+  "sectionSpeed": {
+    "message": "速度"
+  },
+  "playbackSpeed": {
+    "message": "再生速度"
+  },
+  "playbackSpeedHelp": {
+    "message": "無音でない部分の再生速度です。"
+  },
+  "silenceSpeed": {
+    "message": "無音時速度"
+  },
+  "silenceSpeedHelp": {
+    "message": "無音と判定した部分の再生速度です。"
+  },
+  "sectionThreshold": {
+    "message": "しきい値"
+  },
+  "silenceDuration": {
+    "message": "無音検出時間"
+  },
+  "silenceDurationHelp": {
+    "message": "スキップを開始するまで無音が続く必要がある時間です。"
+  },
+  "secondsUnit": {
+    "message": "秒"
+  },
+  "useDynamicThreshold": {
+    "message": "動的しきい値を使用"
+  },
+  "useDynamicThresholdHelp": {
+    "message": "動的しきい値はメディアの無音レベルを自動計算します。動画ごとに手動でしきい値を設定する必要がなくなります。"
+  },
+  "volumeThreshold": {
+    "message": "音量しきい値"
+  },
+  "volumeThresholdHelp": {
+    "message": "音量がこのしきい値を下回ると再生が高速化されます。VUメーターのオレンジ色の線が現在のしきい値です。"
+  },
+  "sectionAdvanced": {
+    "message": "詳細設定"
+  },
+  "advancedSettings": {
+    "message": "詳細設定"
+  },
+  "analyzerType": {
+    "message": "解析方式"
+  },
+  "analyzerTypeHelp": {
+    "message": "拡張機能は異なる解析方式をサポートしており、状況に応じて最適な結果を得られます。"
+  },
+  "analyzerTypeReload": {
+    "message": "解析方式の変更にはページの再読み込みが必要です。今すぐ再読み込みしますか？"
+  },
+  "analyzerTypeTabCapture": {
+    "message": "タブ出力解析"
+  },
+  "analyzerTypeElement": {
+    "message": "要素解析"
+  },
+  "analyzerTypeDisplayMedia": {
+    "message": "画面キャプチャ"
+  },
+  "analyzerTypeDefault": {
+    "message": "デフォルト"
+  },
+  "sampleThreshold": {
+    "message": "サンプルしきい値"
+  },
+  "sampleThresholdHelp": {
+    "message": "高速化するまでに必要な無音の長さです。単語や文の間の短い無音で誤って高速化しないようにするための設定です。"
+  },
+  "samplesUnit": {
+    "message": " samples"
+  },
+  "muteSilence": {
+    "message": "無音時にミュート"
+  },
+  "muteSilenceHelp": {
+    "message": "高速化時のクリックノイズが気になる場合や高速化中の音声を完全に消したい場合に有効にしてください。"
+  },
+  "keepAudioInSync": {
+    "message": "音声同期を維持"
+  },
+  "keepAudioInSyncHelp": {
+    "message": "Chrome および Chromium ベースのブラウザでは、速度変更を繰り返すと音声と映像が同期しなくなるバグがあります。この設定を有効にすると定期的に再同期を試みます。一部のサイトでは30秒ごとにメディアが再バッファリングされる可能性があります。"
+  },
+  "enableCommandBarIcon": {
+    "message": "コマンドバーアイコンを表示"
+  },
+  "enableCommandBarIconHelp": {
+    "message": "右下のコマンドバーロゴが不要な場合は無効にできます。ショートカットキー（Alt+Shift+S）でコマンドバーを開くことは引き続き可能です。"
+  },
+  "showSavedTimeInfo": {
+    "message": "節約時間を表示"
+  },
+  "showSavedTimeInfoHelp": {
+    "message": "動画終了後に節約できた時間を左下に表示します。不要な場合は無効にできます。"
+  },
+  "allowAnonymousAnalytics": {
+    "message": "匿名アナリティクスを許可"
+  },
+  "allowAnonymousAnalyticsHelp": {
+    "message": "匿名化された利用統計の収集を許可します。このデータは拡張機能の改善に使用されます。"
+  },
+  "savedTimeText": {
+    "message": "この拡張機能であなたは :time 節約しました。"
+  },
+  "developedBy": {
+    "message": "開発者"
+  },
+  "showTheTrainingScreenAgain": {
+    "message": "チュートリアルを再度表示"
+  },
+  "forkedFrom": {
+    "message": "フォーク元"
+  },
+  "viewOnGitHub": {
+    "message": "GitHub で見る"
+  }
+}

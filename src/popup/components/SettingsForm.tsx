@@ -1,7 +1,6 @@
 import React from "react"
 import {
   BarChart2,
-  Check,
   ChevronDown,
   ChevronUp,
   Circle,
@@ -32,13 +31,9 @@ import HelpModal from "./helpModal"
 
 function SettingsForm({
   config,
-  isPlus,
-  showPlusPopup,
   isSecureContext
 }: {
   config: TabState
-  isPlus: boolean
-  showPlusPopup: () => void
   isSecureContext: boolean
 }) {
   const grayOutWhenDisabled = {
@@ -53,11 +48,7 @@ function SettingsForm({
         name="enabled"
         label={
           <>
-            <Power
-              strokeWidth={3}
-              style={{ width: 15 }}
-              className="setting-icon"
-            />{" "}
+            <Power strokeWidth={3} style={{ width: 15 }} className="setting-icon" />{" "}
             {__("enable")}
           </>
         }
@@ -68,39 +59,16 @@ function SettingsForm({
         <FormSection title={__("sectionSpeed")}>
           <div id="speed-settings">
             <SpeedSetting
-              label={
-                <>
-                  <Play className="setting-icon" /> {__("playbackSpeed")}
-                </>
-              }
+              label={<><Play className="setting-icon" /> {__("playbackSpeed")}</>}
               name="playback_speed"
               config={config}
-              isPlus={isPlus}
-              showPlusPopup={() => showPlusPopup()}
-              info={
-                <HelpModal>
-                  <h2>{__("playbackSpeed")}</h2>
-                  <p>{__("playbackSpeedHelp")}</p>
-                </HelpModal>
-              }
+              info={<HelpModal><h2>{__("playbackSpeed")}</h2><p>{__("playbackSpeedHelp")}</p></HelpModal>}
             />
-
             <SpeedSetting
-              label={
-                <>
-                  <FastForward className="setting-icon" /> {__("silenceSpeed")}
-                </>
-              }
+              label={<><FastForward className="setting-icon" /> {__("silenceSpeed")}</>}
               name="silence_speed"
               config={config}
-              isPlus={isPlus}
-              showPlusPopup={() => showPlusPopup()}
-              info={
-                <HelpModal>
-                  <h2>{__("silenceSpeed")}</h2>
-                  <p>{__("silenceSpeedHelp")}</p>
-                </HelpModal>
-              }
+              info={<HelpModal><h2>{__("silenceSpeed")}</h2><p>{__("silenceSpeedHelp")}</p></HelpModal>}
             />
           </div>
         </FormSection>
@@ -110,25 +78,12 @@ function SettingsForm({
             name="dynamic_silence_threshold"
             label={
               <>
-                <BarChart2 className="setting-icon" />{" "}
-                {__("useDynamicThreshold")}
-                {!isPlus ? " ★" : ""}{" "}
-                <div className="beta">
-                  beta
-                  <br />
-                  &nbsp;
-                </div>
+                <BarChart2 className="setting-icon" /> {__("useDynamicThreshold")}
+                <div className="beta">beta<br />&nbsp;</div>
               </>
             }
             config={config}
-            plusDisabled={!isPlus}
-            openPlusPopup={() => showPlusPopup()}
-            info={
-              <HelpModal>
-                <h2>{__("useDynamicThreshold")}</h2>
-                <p>{__("useDynamicThresholdHelp")}</p>
-              </HelpModal>
-            }
+            info={<HelpModal><h2>{__("useDynamicThreshold")}</h2><p>{__("useDynamicThresholdHelp")}</p></HelpModal>}
           />
 
           <CSSTransition
@@ -137,154 +92,87 @@ function SettingsForm({
             classNames="opacity-transition"
             className="speed-transition">
             <SliderSetting
-              label={
-                <>
-                  <Volume2 className="setting-icon" /> {__("volumeThreshold")}
-                </>
-              }
+              label={<><Volume2 className="setting-icon" /> {__("volumeThreshold")}</>}
               max={200 / VOLUME_MULTIPLIER}
               name="silence_threshold"
               config={config}
               unit="%"
               half
               orange
-              info={
-                <HelpModal>
-                  <h2>{__("volumeThreshold")}</h2>
-                  <p>{__("volumeThresholdHelp")}</p>
-                </HelpModal>
-              }
+              info={<HelpModal><h2>{__("volumeThreshold")}</h2><p>{__("volumeThresholdHelp")}</p></HelpModal>}
             />
           </CSSTransition>
+
+          <SliderSetting
+            label={<><FastForward className="setting-icon" /> {__("silenceDuration")}</>}
+            min={0.25}
+            max={10}
+            step={0.25}
+            name="silence_duration_seconds"
+            config={config}
+            unit={__("secondsUnit")}
+            half={false}
+            info={<HelpModal><h2>{__("silenceDuration")}</h2><p>{__("silenceDurationHelp")}</p></HelpModal>}
+          />
         </FormSection>
 
         <FormSection title={__("sectionAdvanced")}>
           <button
             className="advanced-button"
             onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}>
-            {showAdvancedSettings ? (
-              <ChevronUp className="setting-icon" />
-            ) : (
-              <ChevronDown className="setting-icon" />
-            )}
+            {showAdvancedSettings ? <ChevronUp className="setting-icon" /> : <ChevronDown className="setting-icon" />}
             {__("advancedSettings")}
           </button>
 
           {showAdvancedSettings && (
             <>
-              <SelectAnalyserType
-                config={config}
-                isSecureContext={isSecureContext}
-              />
+              <SelectAnalyserType config={config} isSecureContext={isSecureContext} />
 
               <SliderSetting
-                label={
-                  <>
-                    <Columns className="setting-icon" /> {__("sampleThreshold")}
-                  </>
-                }
+                label={<><Columns className="setting-icon" /> {__("sampleThreshold")}</>}
                 max={50}
                 name="samples_threshold"
                 config={config}
-                unit=" samples"
+                unit={__("samplesUnit")}
                 half={false}
-                info={
-                  <HelpModal>
-                    <h2>{__("sampleThreshold")}</h2>
-                    <p>{__("sampleThresholdHelp")}</p>
-                  </HelpModal>
-                }
+                info={<HelpModal><h2>{__("sampleThreshold")}</h2><p>{__("sampleThresholdHelp")}</p></HelpModal>}
               />
 
               <Switch
                 name="mute_silence"
-                label={
-                  <>
-                    <Volume className="setting-icon" /> {__("muteSilence")}
-                    {!isPlus ? " ★" : ""}
-                  </>
-                }
+                label={<><Volume className="setting-icon" /> {__("muteSilence")}</>}
                 config={config}
-                plusDisabled={!isPlus}
-                openPlusPopup={() => showPlusPopup()}
-                info={
-                  <HelpModal>
-                    <h2>{__("muteSilence")}</h2>
-                    <p>{__("muteSilenceHelp")}</p>
-                  </HelpModal>
-                }
+                info={<HelpModal><h2>{__("muteSilence")}</h2><p>{__("muteSilenceHelp")}</p></HelpModal>}
               />
 
               {isChromium && (
                 <Switch
                   name="keep_audio_sync"
-                  label={
-                    <>
-                      <Speaker className="setting-icon" />{" "}
-                      {__("keepAudioInSync")}
-                      {!isPlus ? " ★" : ""}
-                    </>
-                  }
+                  label={<><Speaker className="setting-icon" /> {__("keepAudioInSync")}</>}
                   config={config}
-                  plusDisabled={!isPlus}
-                  openPlusPopup={() => showPlusPopup()}
-                  info={
-                    <HelpModal>
-                      <h2>{__("keepAudioInSync")}</h2>
-                      <p>{__("keepAudioInSyncHelp")}</p>
-                    </HelpModal>
-                  }
+                  info={<HelpModal><h2>{__("keepAudioInSync")}</h2><p>{__("keepAudioInSyncHelp")}</p></HelpModal>}
                 />
               )}
 
               <Switch
                 name="is_bar_icon_enabled"
-                label={
-                  <>
-                    <Circle className="setting-icon" />{" "}
-                    {__("enableCommandBarIcon")}
-                  </>
-                }
+                label={<><Circle className="setting-icon" /> {__("enableCommandBarIcon")}</>}
                 config={config}
-                info={
-                  <HelpModal>
-                    <h2>{__("enableCommandBarIcon")}</h2>
-                    <p>{__("enableCommandBarIconHelp")}</p>
-                  </HelpModal>
-                }
+                info={<HelpModal><h2>{__("enableCommandBarIcon")}</h2><p>{__("enableCommandBarIconHelp")}</p></HelpModal>}
               />
 
               <Switch
                 name="show_saved_time_info"
-                label={
-                  <>
-                    <Info className="setting-icon" /> {__("showSavedTimeInfo")}
-                  </>
-                }
+                label={<><Info className="setting-icon" /> {__("showSavedTimeInfo")}</>}
                 config={config}
-                info={
-                  <HelpModal>
-                    <h2>{__("showSavedTimeInfo")}</h2>
-                    <p>{__("showSavedTimeInfoHelp")}</p>
-                  </HelpModal>
-                }
+                info={<HelpModal><h2>{__("showSavedTimeInfo")}</h2><p>{__("showSavedTimeInfoHelp")}</p></HelpModal>}
               />
 
               <Switch
                 name="allow_analytics"
-                label={
-                  <>
-                    <PieChart className="setting-icon" />{" "}
-                    {__("allowAnonymousAnalytics")}
-                  </>
-                }
+                label={<><PieChart className="setting-icon" /> {__("allowAnonymousAnalytics")}</>}
                 config={config}
-                info={
-                  <HelpModal>
-                    <h2>{__("allowAnonymousAnalytics")}</h2>
-                    <p>{__("allowAnonymousAnalyticsHelp")}</p>
-                  </HelpModal>
-                }
+                info={<HelpModal><h2>{__("allowAnonymousAnalytics")}</h2><p>{__("allowAnonymousAnalyticsHelp")}</p></HelpModal>}
               />
             </>
           )}

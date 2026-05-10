@@ -10,14 +10,14 @@ export default function createAudioContextSecure(): Promise<AudioContext> {
 
     const audioContext = new AudioContext();
     if (audioContext.state === 'suspended') {
-      console.log('Skip Silence: Audio context is suspended, trying to resume');
+      console.log('QuickSilence: AudioContext が一時停止中のため再開します');
 
       if (typeof document === 'undefined') {
         if (typeof chrome !== 'undefined' && chrome.offscreen) {
           chrome.offscreen.createDocument({
             url: 'offscreen.html',
             reasons: ['AUDIO_PLAYBACK'],
-            justification: 'Resume AudioContext'
+        justification: 'AudioContext を再開する'
           }).catch(() => {})
         }
         return
@@ -26,9 +26,9 @@ export default function createAudioContextSecure(): Promise<AudioContext> {
       const resumeElement = document.createElement('div');
       resumeElement.setAttribute('style', 'position:absolute;z-index:999999;top:0;left:0;width:100vw;height:100vh;background-color:white;display:flex;justify-content:center;align-items:center;color: #212121;flex-direction: column;cursor:pointer;isolation: isolate;');
       resumeElement.innerHTML = `
-        <h1>Skip Silence requires an interaction</h1>
-        <p>Due to your browser's security restrictions, Skip Silence requries a user interaction to start</p>
-        <p>Press anywhere on the page</p>
+        <h1>QuickSilence を開始するには操作が必要です</h1>
+        <p>ブラウザーのセキュリティ制限により、音声解析の開始にはページ上での操作が必要です。</p>
+        <p>ページ内の任意の場所をクリックしてください。</p>
       `;
       document.body.appendChild(resumeElement);
       resumeElement.addEventListener('click', async () => {

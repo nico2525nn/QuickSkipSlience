@@ -37,7 +37,7 @@ export default class DynamicThresholdCalculator {
       return
     }
 
-    const currentTreshold = this.threshold
+    const currentThreshold = this.threshold
     const sortedSamples = this.previousSamples.sort((a, b) => a - b)
     const lowerLimit =
       sortedSamples[Math.floor(this.previousSamples.length * 0.15)]
@@ -52,7 +52,7 @@ export default class DynamicThresholdCalculator {
 
     debug(
       `Threshold update:
-Old: ${currentTreshold}
+Old: ${currentThreshold}
 New: ${this.threshold}
 Lower limit: ${lowerLimit}
 Delta: ${delta}

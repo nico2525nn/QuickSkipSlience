@@ -60,7 +60,7 @@ const SliderSetting = ({
         id={name}
         onChange={(evt) => {
           // @ts-ignore
-          config.current[name] = parseInt(evt.target.value)
+          config.current[name] = parseFloat(evt.target.value)
         }}
       />
     </div>

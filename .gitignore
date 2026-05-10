@@ -13,6 +13,7 @@
 .turbo
 .next
 .vercel
+.parcel-cache
 
 # misc
 .DS_Store
@@ -23,7 +24,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-
+*.log
 
 # local env files
 .env*
@@ -40,3 +41,11 @@ keys.json
 
 # typescript
 .tsbuildinfo
+
+# Chrome DevTools / performance traces
+*.heapsnapshot
+trace.json
+trace.json.gz
+
+# session logs
+codex_session.jsonl

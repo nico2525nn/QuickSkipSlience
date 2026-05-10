@@ -10,18 +10,17 @@ export enum AnalyserType {
 
 const initialState = {
   enabled: false,
-  analyserType: isChromium ? AnalyserType.tabCapture : AnalyserType.element,
+  analyserType: AnalyserType.element,
 
   // Thresholds
   silence_threshold: 30,
   dynamic_silence_threshold: false,
   samples_threshold: 10,
+  silence_duration_seconds: 1,
 
   // Speeds
   playback_speed: 1,
-  playback_speed_is_custom: false, // True if the user wants to type in their own speed
-  silence_speed: 3,
-  silence_speed_is_custom: false,
+  silence_speed: 10,
 
   // Other features
   mute_silence: false,
@@ -54,11 +53,10 @@ export default function getState(
       "silence_threshold",
       "dynamic_silence_threshold",
       "samples_threshold",
+      "silence_duration_seconds",
 
       "playback_speed",
-      "playback_speed_is_custom",
       "silence_speed",
-      "silence_speed_is_custom",
 
       "mute_silence",
       "keep_audio_sync",

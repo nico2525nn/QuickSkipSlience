@@ -2,42 +2,37 @@ import debug from "../debug"
 import type SilenceSkipper from "./SilenceSkipper"
 import { attachSkipper } from "./Utils"
 
-/**
- * Sample Inspector: Inspect individual samples of the media and determine if the media should be sped up or slowed down
- */
 export default class SampleInspector {
-  // Parent skipper
   skipper: SilenceSkipper
 
   samplesUnderThreshold = 0
   isInspectionRunning = false
-  _samplePosition = 0 // This will count up to 50, then and reset to 0
+  _samplePosition = 0
   _lastSentVolumeInfo = 0
+  private silenceStartedAt = 0
 
-  /**
-   * Set up the class
-   *
-   * @param config Config to use
-   */
   constructor(skipper: SilenceSkipper) {
     this.skipper = skipper
   }
 
-  /**
-   * Calculate the current volume of the media
-   */
-  calculateVolume() {
+  getCurrentSamples() {
     if (!this.skipper.analyser || !this.skipper.audioFrequencies) {
       debug("SilenceSkipper: Can't calculate volume as we are not attached")
-      return 100
+      return undefined
     }
 
     this.skipper.analyser.getFloatTimeDomainData(this.skipper.audioFrequencies)
+    return this.skipper.audioFrequencies
+  }
 
-    // Compute volume via peak instantaneous power over the interval
+  calculateVolume(samples: Float32Array | undefined) {
+    if (!samples) {
+      return 100
+    }
+
     let peakInstantaneousPower = 0
-    for (let i = 0; i < this.skipper.audioFrequencies.length; i++) {
-      const power = this.skipper.audioFrequencies[i]
+    for (let i = 0; i < samples.length; i++) {
+      const power = Math.abs(samples[i])
       peakInstantaneousPower = Math.max(power, peakInstantaneousPower)
     }
     const volume = 500 * peakInstantaneousPower
@@ -45,18 +40,22 @@ export default class SampleInspector {
     return volume
   }
 
-  /**
-   * Inspect the current sample of the media and speed up or down accordingly
-   */
   async inspectSample() {
     this.isInspectionRunning = true
 
-    // Make sure we are attached
-    if (!this.skipper.isAttached) await attachSkipper(this.skipper)
+    try {
+      if (!this.skipper.isAttached) await attachSkipper(this.skipper)
+    } catch (error) {
+      debug("SilenceSkipper: Disabling after attach error", error)
+      this.skipper.config.current.enabled = false
+      this.stopInspection()
+      return
+    }
 
     this._samplePosition = (this._samplePosition + 1) % 50
 
-    const volume = this.calculateVolume()
+    const samples = this.getCurrentSamples()
+    const volume = this.calculateVolume(samples)
     const useDynamicThreshold =
       this.skipper.config.current.dynamic_silence_threshold
 
@@ -67,9 +66,20 @@ export default class SampleInspector {
     const threshold = useDynamicThreshold
       ? this.skipper.dynamicThresholdCalculator.threshold
       : this.skipper.config.current.silence_threshold
-    const sampleThreshold = this.skipper.config.current.samples_threshold
 
-    this.updateSpeedBasedOnSampleResult(volume, threshold, sampleThreshold)
+    const vadResult =
+      samples && this.skipper.audioContext
+        ? await this.skipper.vadDetector.detect(
+            samples,
+            this.skipper.audioContext.sampleRate
+          )
+        : { available: false, isSpeech: false, probability: 0 }
+
+    this.updateSpeedBasedOnSampleResult(
+      volume,
+      threshold,
+      vadResult.available && vadResult.isSpeech
+    )
     this.sendVolumeInfoToPopup(volume)
     this.prepareNextInspection()
   }
@@ -85,10 +95,10 @@ export default class SampleInspector {
   private stopInspection() {
     this.isInspectionRunning = false
 
-    // Make sure the video is back to normal speed
     if (this.skipper.isSpedUp) {
       this.skipper.isSpedUp = false
       this.samplesUnderThreshold = 0
+      this.silenceStartedAt = 0
     }
     this.skipper._sendCommand("slowDown")
     this.skipper.speedController.setPlaybackRate(1)
@@ -118,19 +128,27 @@ export default class SampleInspector {
   private updateSpeedBasedOnSampleResult(
     volume: number,
     threshold: any,
-    sampleThreshold: any
+    isSpeech: boolean
   ) {
-    if (volume < threshold && !this.skipper.isSpedUp) {
-      // We are below our threshold and should possibly slow down
-      this.samplesUnderThreshold += 1
+    const requiredSilenceMs =
+      (this.skipper.config.current.silence_duration_seconds || 3) * 1000
+    const isSilent = volume < threshold && !isSpeech
 
-      if (this.samplesUnderThreshold >= sampleThreshold) {
-        // We are over our sample threshold and should speed up!
+    if (isSilent && !this.skipper.isSpedUp) {
+      this.samplesUnderThreshold += 1
+      if (!this.silenceStartedAt) {
+        this.silenceStartedAt = performance.now()
+      }
+
+      if (performance.now() - this.silenceStartedAt >= requiredSilenceMs) {
         this.skipper.speedController.speedUp()
       }
-    } else if (volume > threshold && this.skipper.isSpedUp) {
-      // Slow back down as we are now in a loud part again
+    } else if (!isSilent && this.skipper.isSpedUp) {
       this.skipper.speedController.slowDown()
+      this.silenceStartedAt = 0
+    } else if (!isSilent) {
+      this.samplesUnderThreshold = 0
+      this.silenceStartedAt = 0
     }
   }
 
@@ -138,8 +156,6 @@ export default class SampleInspector {
     this.skipper.dynamicThresholdCalculator.previousSamples.push(volume)
 
     if (this._samplePosition === 0) {
-      // Let the dynamic threshold calculator re-calculate the threshold
-      // This is only done every 50 samples to reduce load
       this.skipper.dynamicThresholdCalculator.calculate()
     }
   }
