@@ -16,6 +16,7 @@
 
 # misc
 .DS_Store
+Thumbs.db
 *.pem
 
 # debug
@@ -24,10 +25,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-
 # local env files
 .env*
+!.env.example
 
+# build output
 out/
 build/
 dist/
@@ -43,3 +45,17 @@ keys.json
 
 # Chrome dev profile
 chrome-dev-profile/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+desktop.ini
+ehthumbs.db
+
+# extension packages
+*.crx
+*.xpi
