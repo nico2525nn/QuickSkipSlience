@@ -48,6 +48,17 @@
     "host_permissions": [
       "<all_urls>"
     ],
+    "web_accessible_resources": [
+      {
+        "resources": [
+          "assets/offscreen.html",
+          "assets/offscreen.js"
+        ],
+        "matches": [
+          "<all_urls>"
+        ]
+      }
+    ],
     "commands": {
       "toggle-enable": {
         "suggested_key": {
@@ -64,6 +75,7 @@
     },
     "permissions": [
       "activeTab",
+      "offscreen",
       "storage",
       "tabCapture"
     ],

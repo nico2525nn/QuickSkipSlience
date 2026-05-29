@@ -1,5 +1,6 @@
 import { StateEnvironment } from "@vantezzen/plasmo-state"
 import React, { ChangeEvent } from "react"
+import browser from "webextension-polyfill"
 
 import type { StateKey, TabState } from "~shared/state"
 
@@ -59,6 +60,22 @@ const Switch = ({
                   type: `${name}:${evt.target.checked ? "enable" : "disable"}`
                 }
               })
+
+              if (name === "enabled") {
+                browser.tabs
+                  .query({ active: true, currentWindow: true })
+                  .then((tabs) => {
+                    const tabId = tabs[0]?.id
+                    if (!tabId) return
+                    return browser.runtime.sendMessage({
+                      command: evt.target.checked
+                        ? "start-tab-capture"
+                        : "stop-tab-capture",
+                      tabId
+                    })
+                  })
+                  .catch(() => {})
+              }
             }
 
             if (name === "allow_analytics") {

@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "TabCapture Test",
+  "version": "1.0.0",
+  "permissions": ["activeTab", "tabCapture", "offscreen", "storage"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Start Tab Capture"
+  },
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["content.js"],
+    "all_frames": true,
+    "run_at": "document_end"
+  }]
+}
