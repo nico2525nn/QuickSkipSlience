@@ -3,40 +3,19 @@ import "fontsource-poppins"
 import "fontsource-poppins/600.css"
 import { Steps } from "intro.js-react"
 import "intro.js/introjs.css"
-import React, { ChangeEvent, Component } from "react"
+import React, { Component } from "react"
 import browser from "webextension-polyfill"
 
 import getState, { TabState } from "~shared/state"
 
-import trackEvent, { setupAnalytics } from "../shared/analytics"
 import LocalPlayerInfo from "../shared/components/localPlayerInfo"
 import VUMeter from "../shared/components/vuMeter"
-import __ from "../shared/i18n"
-import verifyLicense from "../shared/license"
 import "./Popup.scss"
 import Footer from "./components/Footer"
-import NeonFin from "./components/NeonFin"
 import SettingsForm from "./components/SettingsForm"
 import Header from "./components/header"
-import PlusInfo from "./components/plusInfo"
-import V4Info from "./components/v4info"
 import { introSteps } from "./config"
 import "./index.scss"
-
-// Simple Analytics Event Wrapper
-window.sa_event =
-  window.sa_event ||
-  function () {
-    var a = [].slice.call(arguments)
-    // @ts-ignore
-    window.sa_event.q ? window.sa_event.q.push(a) : (window.sa_event.q = [a])
-  }
-window.plausible =
-  window.plausible ||
-  function () {
-    // @ts-ignore
-    ;(window.plausible.q = window.plausible.q || []).push(arguments)
-  }
 
 class Popup extends Component {
   tabState?: TabState
@@ -45,15 +24,12 @@ class Popup extends Component {
   state = {
     shouldShowIntro: localStorage.getItem("hasShownIntro") !== "yes",
     isLocalPlayer: false,
-    isSecureContext: true,
-    isPlus: false,
-    showPlusPopup: false
+    isSecureContext: true
   }
 
   constructor(props: object) {
     super(props)
 
-    // Check if we are on a local player
     browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
       if (tabs[0] && tabs[0].url) {
         this.setupConfigProvider(tabs[0].id!)
@@ -74,9 +50,6 @@ class Popup extends Component {
             isSecureContext: false
           })
         }
-
-        window.sa_event(`open_${url.host}`)
-        window.plausible("open", { props: { site: url.host } })
       }
     })
   }
@@ -89,43 +62,12 @@ class Popup extends Component {
       if (this.isComponentMounted) {
         this.forceUpdate()
       }
-      if (initialUpdate) {
-        initialUpdate = false
-
-        if (
-          this.tabState!.current.allow_analytics &&
-          !document.getElementById("simpleanalytics")
-        ) {
-          setupAnalytics()
-        }
-      }
+      initialUpdate = false
     })
-  }
-
-  async checkPlusStatus() {
-    const isValid = await verifyLicense()
-    this.setState({
-      isPlus: isValid
-    })
-  }
-
-  showPlusPopup() {
-    trackEvent("show_plus_popup")
-
-    this.setState({
-      showPlusPopup: true
-    })
-  }
-
-  closePlusPopup() {
-    trackEvent("close_plus_popup")
-
-    this.setState({ showPlusPopup: false })
   }
 
   componentDidMount() {
     this.isComponentMounted = true
-    this.checkPlusStatus()
   }
 
   componentWillUnmount() {
@@ -145,12 +87,6 @@ class Popup extends Component {
     return (
       <div>
         <div className="App">
-          {this.state.showPlusPopup && (
-            <PlusInfo
-              onClose={() => this.closePlusPopup()}
-              triggerValidation={() => this.checkPlusStatus()}
-            />
-          )}
           {this.state.isLocalPlayer ? (
             <LocalPlayerInfo />
           ) : (
@@ -169,20 +105,14 @@ class Popup extends Component {
 
               <Header />
 
-              <V4Info />
-
               <div style={grayOutWhenDisabled}>
                 <VUMeter config={this.tabState} />
               </div>
 
               <SettingsForm
                 config={this.tabState}
-                isPlus={this.state.isPlus}
-                showPlusPopup={() => this.showPlusPopup()}
                 isSecureContext={this.state.isSecureContext}
               />
-
-              {!this.state.isPlus && <NeonFin />}
             </>
           )}
         </div>

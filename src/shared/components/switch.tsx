@@ -10,8 +10,6 @@ interface SwitchProps {
   label: string | React.ReactNode
   name: StateKey
   config: TabState
-  plusDisabled?: boolean
-  openPlusPopup?: () => void
   info?: React.ReactNode
 }
 
@@ -19,8 +17,6 @@ const Switch = ({
   label,
   name,
   config,
-  plusDisabled,
-  openPlusPopup,
   info
 }: SwitchProps) => {
   return (
@@ -41,26 +37,10 @@ const Switch = ({
           className="switch"
           checked={config.current[name] as boolean}
           onChange={(evt) => {
-            if (plusDisabled) {
-              if (openPlusPopup) {
-                openPlusPopup()
-              }
-              return
-            }
-
             // @ts-ignore
             config.current[name] = evt.target.checked
 
             if (config.environment === StateEnvironment.Popup) {
-              window.sa_event(
-                `setting_${name}_${evt.target.checked ? "enable" : "disable"}`
-              )
-              window.plausible("setting_change", {
-                props: {
-                  type: `${name}:${evt.target.checked ? "enable" : "disable"}`
-                }
-              })
-
               if (name === "enabled") {
                 browser.tabs
                   .query({ active: true, currentWindow: true })

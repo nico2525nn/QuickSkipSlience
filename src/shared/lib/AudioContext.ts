@@ -10,13 +10,13 @@ export default function createAudioContextSecure(): Promise<AudioContext> {
 
     const audioContext = new AudioContext();
     if (audioContext.state === 'suspended') {
-      console.log('Skip Silence: Audio context is suspended, trying to resume');
+      console.log('Quick Skip Silence: Audio context is suspended, trying to resume');
 
       const resumeElement = document.createElement('div');
       resumeElement.setAttribute('style', 'position:absolute;z-index:999999;top:0;left:0;width:100vw;height:100vh;background-color:white;display:flex;justify-content:center;align-items:center;color: #212121;flex-direction: column;cursor:pointer;isolation: isolate;');
       resumeElement.innerHTML = `
-        <h1>Skip Silence requires an interaction</h1>
-        <p>Due to your browser's security restrictions, Skip Silence requries a user interaction to start</p>
+        <h1>Quick Skip Silence requires an interaction</h1>
+        <p>Due to your browser's security restrictions, Quick Skip Silence requires a user interaction to start</p>
         <p>Press anywhere on the page</p>
       `;
       document.body.appendChild(resumeElement);

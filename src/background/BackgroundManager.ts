@@ -152,7 +152,6 @@ class TabCaptureController {
   private speedUp() {
     debug("TabCaptureController: speedUp", this.tabId)
     this.isSpedUp = true
-    browser.runtime.sendMessage({ command: "speedUp" }).catch(() => {})
     this.state.current.media_speed = this.state.current.silence_speed
   }
 
@@ -160,7 +159,6 @@ class TabCaptureController {
     debug("TabCaptureController: slowDown", this.tabId)
     this.isSpedUp = false
     this.samplesUnderThreshold = 0
-    browser.runtime.sendMessage({ command: "slowDown" }).catch(() => {})
     this.state.current.media_speed = this.state.current.playback_speed
   }
 }

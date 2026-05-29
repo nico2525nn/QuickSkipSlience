@@ -1,6 +1,6 @@
 {
   "name": "skip-silence",
-  "displayName": "Skip silence",
+  "displayName": "Quick Skip Silence",
   "version": "5.2.0",
   "description": "Skip silent parts in videos and audio files.",
   "author": "vantezzen",

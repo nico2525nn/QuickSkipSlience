@@ -1,6 +1,6 @@
 {
   "extensionName": {
-    "message": "Skip Silence"
+    "message": "Quick Skip Silence"
   },
 
   "extensionDescription": {
@@ -8,7 +8,7 @@
   },
 
   "enable": {
-    "message": "Enable Skip Silence"
+    "message": "Enable Quick Skip Silence"
   },
 
   "sectionSpeed": {
@@ -95,7 +95,7 @@
     "message": "Keep audio in sync"
   },
   "keepAudioInSyncHelp": {
-    "message": "Chrome and Browsers that base on Chromium (e.g. Edge) currently have a bug that will result in audio and video getting out of sync when changing the speed often.\n As \"Skip Silence\" will change the video speed often, you might experience this issue.\n When this setting is activated, Skip Silence will try to fix this issue by periodically putting them back into sync.\n Please note that this setting may cause media to re-buffer every 30s on some websites."
+    "message": "Chrome and Browsers that base on Chromium (e.g. Edge) currently have a bug that will result in audio and video getting out of sync when changing the speed often.\n As \"Quick Skip Silence\" will change the video speed often, you might experience this issue.\n When this setting is activated, Quick Skip Silence will try to fix this issue by periodically putting them back into sync.\n Please note that this setting may cause media to re-buffer every 30s on some websites."
   },
 
   "enableCommandBarIcon": {
@@ -109,14 +109,14 @@
     "message": "Show saved time info"
   },
   "showSavedTimeInfoHelp": {
-    "message": "After a video or audio ended, \"Skip Silence\" will show a small info message in the bottom left corner, informing you how much time you have saved in this media alone. \nIf you do not like this message, you can disable it."
+    "message": "After a video or audio ended, \"Quick Skip Silence\" will show a small info message in the bottom left corner, informing you how much time you have saved in this media alone. \nIf you do not like this message, you can disable it."
   },
 
   "allowAnonymousAnalytics": {
     "message": "Allow anonymous analytics"
   },
   "allowAnonymousAnalyticsHelp": {
-    "message": "\"Skip Silence\" uses Simple Analytics (https://simpleanalytics.com/) and Plausible to collect a few anonymized analytics without reducing your privacy.\nThis data allows us to better understand how users use our extension and how we can improve it.\nWe understand that some people do not like sending anonymized analytics, so you can completely opt-out of this!"
+    "message": "\"Quick Skip Silence\" uses Simple Analytics (https://simpleanalytics.com/) and Plausible to collect a few anonymized analytics without reducing your privacy.\nThis data allows us to better understand how users use our extension and how we can improve it.\nWe understand that some people do not like sending anonymized analytics, so you can completely opt-out of this!"
   },
 
   "savedTimeText": {
@@ -132,19 +132,19 @@
   },
 
   "plusInfoHeader": {
-    "message": "Get more out of Skip Silence with Skip Silence Plus"
+    "message": "Get more out of Quick Skip Silence with Quick Skip Silence Plus"
   },
 
   "plusInfoThankYou": {
-    "message": "Thank you for using \"Skip Silence\" to increase your productivity."
+    "message": "Thank you for using \"Quick Skip Silence\" to increase your productivity."
   },
 
   "plusInfoWhatIsIt": {
-    "message": "To help keep the development of \"Skip Silence\" alive and to help expanding it to more browsers, some more advanced features require \"Skip Silence Plus\"."
+    "message": "To help keep the development of \"Quick Skip Silence\" alive and to help expanding it to more browsers, some more advanced features require \"Quick Skip Silence Plus\"."
   },
 
   "plusInfoPricing": {
-    "message": "\"Skip Silence Plus\" is a one-time payment and allows you to activate Plus across all your personal devices - so you won't have to purchase mutliple licenses!"
+    "message": "\"Quick Skip Silence Plus\" is a one-time payment and allows you to activate Plus across all your personal devices - so you won't have to purchase mutliple licenses!"
   },
 
   "plusInfoLearnMore": {
@@ -180,31 +180,31 @@
   },
 
   "plusInfoActivationSuccess": {
-    "message": "Skip Silence Plus has been activated!"
+    "message": "Quick Skip Silence Plus has been activated!"
   },
 
   "plusInfoActivationSuccessThanks": {
-    "message": "Thank you for purchasing Skip Silence Plus. Your donation helps continue developing Skip Silence!"
+    "message": "Thank you for purchasing Quick Skip Silence Plus. Your donation helps continue developing Quick Skip Silence!"
   },
 
   "plusInfoActivationSuccessInfo": {
-    "message": "You can now use all of Skip Silence's features."
+    "message": "You can now use all of Quick Skip Silence's features."
   },
 
   "plusInfoActivationSuccessClose": {
-    "message": "Start using Skip Silence Plus"
+    "message": "Start using Quick Skip Silence Plus"
   },
 
   "introHeader": {
-    "message": "Welcome to Skip Silence! I can show you around, if you want to - otherwise click the X at any point"
+    "message": "Welcome to Quick Skip Silence! I can show you around, if you want to - otherwise click the X at any point"
   },
 
   "introVuMeter": {
-    "message": "This bar will show you the current volume of the media you are playing.<br />If the volume is lower than the orange line, Skip Silence will speed up the video.<br />If the bar turns orange, the video is currently sped up."
+    "message": "This bar will show you the current volume of the media you are playing.<br />If the volume is lower than the orange line, Quick Skip Silence will speed up the video.<br />If the bar turns orange, the video is currently sped up."
   },
 
   "introEnabled": {
-    "message": "Click this switch in order to enable or disable Skip Silence on the current page. If you disable Skip Silence you will not see the volume level above."
+    "message": "Click this switch in order to enable or disable Quick Skip Silence on the current page. If you disable Quick Skip Silence you will not see the volume level above."
   },
 
   "introSpeed": {
@@ -220,7 +220,7 @@
   },
 
   "savedInMediaInfo": {
-    "message": "Skip Silence saved you :time during this media"
+    "message": "Quick Skip Silence saved you :time during this media"
   },
 
   "commandBarListening": {

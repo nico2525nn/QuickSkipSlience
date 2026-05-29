@@ -1,14 +1,12 @@
 import React from "react"
 import {
   BarChart2,
-  Check,
   ChevronDown,
   ChevronUp,
   Circle,
   Columns,
   FastForward,
   Info,
-  PieChart,
   Play,
   Power,
   Speaker,
@@ -32,13 +30,9 @@ import HelpModal from "./helpModal"
 
 function SettingsForm({
   config,
-  isPlus,
-  showPlusPopup,
   isSecureContext
 }: {
   config: TabState
-  isPlus: boolean
-  showPlusPopup: () => void
   isSecureContext: boolean
 }) {
   const grayOutWhenDisabled = {
@@ -75,8 +69,6 @@ function SettingsForm({
               }
               name="playback_speed"
               config={config}
-              isPlus={isPlus}
-              showPlusPopup={() => showPlusPopup()}
               info={
                 <HelpModal>
                   <h2>{__("playbackSpeed")}</h2>
@@ -93,8 +85,6 @@ function SettingsForm({
               }
               name="silence_speed"
               config={config}
-              isPlus={isPlus}
-              showPlusPopup={() => showPlusPopup()}
               info={
                 <HelpModal>
                   <h2>{__("silenceSpeed")}</h2>
@@ -112,7 +102,6 @@ function SettingsForm({
               <>
                 <BarChart2 className="setting-icon" />{" "}
                 {__("useDynamicThreshold")}
-                {!isPlus ? " ★" : ""}{" "}
                 <div className="beta">
                   beta
                   <br />
@@ -121,8 +110,6 @@ function SettingsForm({
               </>
             }
             config={config}
-            plusDisabled={!isPlus}
-            openPlusPopup={() => showPlusPopup()}
             info={
               <HelpModal>
                 <h2>{__("useDynamicThreshold")}</h2>
@@ -201,12 +188,9 @@ function SettingsForm({
                 label={
                   <>
                     <Volume className="setting-icon" /> {__("muteSilence")}
-                    {!isPlus ? " ★" : ""}
                   </>
                 }
                 config={config}
-                plusDisabled={!isPlus}
-                openPlusPopup={() => showPlusPopup()}
                 info={
                   <HelpModal>
                     <h2>{__("muteSilence")}</h2>
@@ -222,12 +206,9 @@ function SettingsForm({
                     <>
                       <Speaker className="setting-icon" />{" "}
                       {__("keepAudioInSync")}
-                      {!isPlus ? " ★" : ""}
                     </>
                   }
                   config={config}
-                  plusDisabled={!isPlus}
-                  openPlusPopup={() => showPlusPopup()}
                   info={
                     <HelpModal>
                       <h2>{__("keepAudioInSync")}</h2>
@@ -266,23 +247,6 @@ function SettingsForm({
                   <HelpModal>
                     <h2>{__("showSavedTimeInfo")}</h2>
                     <p>{__("showSavedTimeInfoHelp")}</p>
-                  </HelpModal>
-                }
-              />
-
-              <Switch
-                name="allow_analytics"
-                label={
-                  <>
-                    <PieChart className="setting-icon" />{" "}
-                    {__("allowAnonymousAnalytics")}
-                  </>
-                }
-                config={config}
-                info={
-                  <HelpModal>
-                    <h2>{__("allowAnonymousAnalytics")}</h2>
-                    <p>{__("allowAnonymousAnalyticsHelp")}</p>
                   </HelpModal>
                 }
               />

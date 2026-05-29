@@ -11,4 +11,21 @@
     height: 30px;
     margin-right: 1rem;
   }
+
+  .lang-toggle {
+    margin-left: auto;
+    background: none;
+    border: 1px solid #555;
+    border-radius: 4px;
+    color: #A7A7A7;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: #FADC4B;
+      color: #FADC4B;
+    }
+  }
 }
