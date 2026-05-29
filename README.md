@@ -1,130 +1,185 @@
 <p align="center">
-    <img src="img/title.png"><br />
-    <a href="https://chrome.google.com/webstore/detail/skip-silence/fhdmkhbefcbhakffdihhceaklaigdllh">
-        <img src="img/chrome.png" alt="Available on chrome web store" width="150">
-    </a>
-    <a href="https://addons.mozilla.org/de/firefox/addon/skip-silence/">
-        <img src="img/firefox.png" alt="Available on Firefox Addons" width="150">
-    </a>
-    <a href="https://microsoftedge.microsoft.com/addons/detail/skip-silence/njflliajflcedhfmpmhdekhmejekonmc">
-        <img src="img/edge.png" alt="Available on Edge Add-ons" width="150">
-    </a>
-    <a href="https://www.buymeacoffee.com/vantezzen" target="_blank">
-      <img src="assets/bmc.png" alt="Buy Me A Coffee" width="150">
-    </a>
+  <b>English</b> | <a href="README.ja.md">日本語</a>
 </p>
 
-# Skip Silence
+# Quick Skip Silence
 
-"Skip Silence" is a browser extension that allows you to automatically skip parts of a video that are silent.
-It is highly inspired by CaryKH's [automatic on-the-fly video editing tool](https://www.youtube.com/watch?v=DQ8orIurGxw).
-The extension works with most websites that use HTML5 `audio` and `video` elements (like YouTube).
+A browser extension that automatically speeds up silent parts of videos and audio. Forked from [vantezzen/skip-silence](https://github.com/vantezzen/skip-silence).
 
-## Demo
+## What it does
 
-<img src="img/demo.gif" height="300">
+When a video or audio has silent pauses, Quick Skip Silence detects them and speeds up playback (default: 3x) so you don't have to wait. When speech or sound resumes, it returns to normal speed.
 
-(Video used: Unedited part of <https://youtu.be/DQ8orIurGxw?t=234>)
+```
+Normal audio:    |████████████░░░░░░░░|████████████████|
+                  1x playing          silent pause      1x playing
+
+With extension:  |████████████░░░░|████████████████|
+                  1x playing       3x (skipped!)      1x playing
+```
+
+## Features
+
+- **Tab Capture audio analysis** — captures tab audio via `chrome.tabCapture` API (Chrome MV3 + offscreen document)
+- **Configurable silence threshold** — set the volume level below which audio is considered silent (default: 30%)
+- **Dynamic threshold** — automatically adjusts the silence threshold based on the audio content
+- **Adjustable speeds** — set custom playback speed for normal parts (default: 1x) and silent parts (default: 3x)
+- **Mute silence** — optionally mute audio during sped-up sections
+- **Audio sync fix** — periodically resyncs audio/video to work around a Chromium bug
+- **Language selector** — English and Japanese UI (toggle in the header)
+- **Command bar** — quick-access overlay with keyboard shortcuts
+- **VU meter** — visual volume indicator in the popup
 
 ## Installation
 
-"Skip Silence" is available through the [chrome web store](https://chrome.google.com/webstore/detail/skip-silence/fhdmkhbefcbhakffdihhceaklaigdllh).
-You can also install this extension on Chrome by downloading the source from GitHub and loading the unpacked, built extension through "chrome://extensions" as a "Temporary Add-On".
+### Chrome (recommended)
 
-## Firefox
+1. Download or clone this repository
+2. Build the extension:
+   ```bash
+   pnpm install
+   pnpm run build:mv3
+   ```
+3. Open `chrome://extensions`
+4. Enable **Developer mode**
+5. Click **Load unpacked** and select the `build/chrome-mv3-prod` folder
 
-"Skip Silence" only has **restricted** support for Firefox.
+### Manual build
 
-On Chrome, "Skip Silence" uses a browser API to support analyzing audio on almost all websites. Unfortunately, Firefox currently doesn't support this API and thus the extension doesn't work on some websites. Take a look at [open bugs](#open-browser-bugs) for more info.
+```bash
+# Install dependencies
+pnpm install
 
-If you have problems with the extension on a website on Firefox, you can try using a Chromium-based browser like Ungoogled Chromium.
+# Build for Chrome MV3
+pnpm run build:mv3
+
+# The output will be at build/chrome-mv3-prod/
+```
 
 ## Usage
 
-When "Skip Silence" detects a compatible element on the current page, its icon in the menubar will be colored.
+1. Open any page with video/audio (e.g. YouTube)
+2. Click the extension icon in the toolbar
+3. Toggle **Enable Quick Skip Silence** on
+4. The VU meter shows the current volume:
+   - **Blue** = normal playback
+   - **Orange** = sped up (silent section detected)
+5. Adjust the silence threshold slider to fine-tune detection sensitivity
+6. Set your preferred playback and silence speeds
 
-![Changing icon](img/icon_change.png)
+### Keyboard shortcuts
 
-You can now click on this icon to reveal the settings popup.
+| Shortcut | Action |
+|---|---|
+| `Ctrl+Shift+S` | Toggle enable/disable |
+| `Alt+Shift+S` | Show/hide command bar |
 
-You can now:
+## How it works
 
-- Click the toggle button to enable and disable "Skip Silence" for the current page
-- Change "Skip Silence"'s settings
-- View the current volume using the VU meter
-  - The VU Meter will be blue when on normal speed and green when currently in a silent part
-  - The red line represents your current volume threshold
+1. When enabled, the background service worker calls `chrome.tabCapture.getMediaStreamId()` to get a stream ID for the active tab
+2. An offscreen document is created and receives the stream ID
+3. The offscreen document calls `getUserMedia()` with the tab audio stream, creates an `AudioContext` + `AnalyserNode`
+4. Every 25ms, the RMS volume is calculated from the audio waveform
+5. The volume is sent back to the background via `chrome.runtime.sendMessage()`
+6. `TabCaptureController` compares the volume against the threshold
+7. When volume stays below threshold for N samples → speeds up (`state.media_speed = 3`)
+8. When volume rises above threshold → slows down (`state.media_speed = 1`)
+9. The content script detects the state change and applies `element.playbackRate`
 
-## Limitations
+### Architecture
 
-- Won't work on sites that use other methods to play video or audio (e.g. Spotify Web Player uses a special method to prevent songs from being downloaded)
+```
+┌─────────────┐     streamId      ┌──────────────────┐
+│  Background  │ ────────────────> │  Offscreen Doc   │
+│  (Service    │ <──────────────── │  (AudioContext +  │
+│   Worker)    │   tab-capture-    │   AnalyserNode)  │
+│              │   volume          │                   │
+│  TabCapture  │                   └──────────────────┘
+│  Controller  │
+│              │   media_speed change
+│              │ ────────────────> ┌──────────────────┐
+└─────────────┘                   │  Content Script   │
+                                  │  (SpeedController) │
+                                  │  → playbackRate    │
+                                  └──────────────────┘
+```
 
-## How does it work?
+## Settings
 
-The extension attaches a JavaScript audio analyser to the current video or audio source and will speed up or slow down the video using the current volume of the audio.
+| Setting | Default | Description |
+|---|---|---|
+| Playback Speed | 1x | Speed during normal (non-silent) audio |
+| Silence Speed | 3x | Speed during silent sections |
+| Silence Threshold | 30% | Volume level below which audio is considered silent |
+| Dynamic Threshold | off | Auto-adjusts threshold based on audio content |
+| Sample Threshold | 10 | Number of consecutive silent samples before speeding up |
+| Mute Silence | off | Mute audio during sped-up sections |
+| Keep Audio in Sync | off | Periodically resync to fix Chromium desync bug |
 
-## Open browser bugs
+## Known limitations
 
-The extension sometimes seems to push the boundaries of what browsers can do. Due to this, some features that would be nice to have can't be implemented as the browsers contain bugs or missing features.
-
-Current list of bugs/feature requests the extension is waiting for
-
-- Chrome mutes tab when `preferCurrentTab: true` is set
-  - https://bugs.chromium.org/p/chromium/issues/detail?id=1317964&q=preferCurrentTab&can=2
-  - This would make selecting the tab for the "Screen capture" analyzer type easier
-- Firefox doesn't support audio for screen capture
-  - https://bugzilla.mozilla.org/show_bug.cgi?id=1541425
-  - Due to this, the "Screen capture" analyzer type is not available on Firefox
-- Firefox doesn't support the `tabCapture` API
-  - https://bugzilla.mozilla.org/show_bug.cgi?id=1391223
-  - Due to this, the "Tab-output analysis" analyzer type is not available on Firefox#
-- Chrome MV3 doesn't support the `tabCapture` API
-  - https://github.com/GoogleChrome/chrome-extensions-samples/issues/627
-  - Due to this, Skip silence is currently still using MV2 on Chrome
-- Chrome video and audio desynchronize over time when repeatedly switching speed
-  - https://bugs.chromium.org/p/chromium/issues/detail?id=1231093
-  - "Keep audio in sync" was added as a temporary fix for this bug
+- Does not work on sites that use non-standard audio playback (e.g. Spotify Web Player)
+- On Firefox, tab capture is not supported — only element-based analysis works
+- Chromium has a bug where audio/video desync when repeatedly changing speed (workaround: "Keep Audio in Sync" setting)
 
 ## Development
 
-This extension is using the [plasmo framework](https://docs.plasmo.com/) for developing and building.
-
-To start development, follow these steps:
-
-1. Check if your [Node.js](https://nodejs.org/) version is v18 or newer.
-2. Clone this repository.
-3. Run `pnpm install` to install the dependencies.
-4. Run `pnpm dev` to start the development server for chrome or `pnpm dev:firefox` for Firefox.
-5. Load your extension on Chrome following:
-   1. Access `chrome://extensions/`
-   2. Check `Developer mode`
-   3. Click on `Load unpacked extension`
-   4. Select the `build` folder.
-6. Happy hacking.
-
-## Build
-
-Requirements:
-
-- NodeJS 18
-- preferably pnpm but npm will also work
-
-Run these commands in the root of the extension files:
+Built with [Plasmo](https://docs.plasmo.com/) framework.
 
 ```bash
-pnpm install # or npm install
-pnpm run build # or npm run build
-pnpm run build:firefox # or npm run build
+# Install
+pnpm install
+
+# Dev server (Chrome MV3)
+pnpm run dev:mv3
+
+# Build
+pnpm run build:mv3
 ```
 
-After the build is done, the raw contents will be placed in `/build` and the compacted zip will be placed in `/build/[chrome/firefox]-mv2-prod.zip`.
+### Project structure
 
-## Contributing
+```
+src/
+├── background/
+│   ├── BackgroundManager.ts    # Tab management + TabCaptureController
+│   └── index.ts                # Entry point
+├── contents/
+│   ├── index.tsx               # Content script entry
+│   └── lib/
+│       ├── SpeedController.ts  # Applies playbackRate to media elements
+│       ├── AudioSync.ts        # Audio/video resync workaround
+│       └── command-bar/        # Command bar overlay
+├── shared/
+│   ├── i18n.ts                 # Internationalization (EN/JA)
+│   ├── state.ts                # Extension state definition
+│   ├── analytics.ts            # Analytics (disabled)
+│   ├── components/
+│   │   ├── switch.tsx          # Toggle switch component
+│   │   └── speedSetting.tsx    # Speed selector component
+│   └── lib/
+│       ├── SilenceSkipper.ts   # Element-based silence detection
+│       └── DynamicThresholdCalculator.ts
+├── popup/
+│   ├── index.tsx               # Popup entry
+│   └── components/
+│       ├── header.tsx          # Header with language toggle
+│       ├── SettingsForm.tsx    # Settings UI
+│       └── Footer.tsx          # Fork credit
+├── assets/
+│   ├── offscreen.html          # Offscreen document for tab capture
+│   └── offscreen.js            # Audio analysis in offscreen context
+locales/
+├── en/messages.json            # English strings
+└── ja/messages.json            # Japanese strings
+```
 
-Please fork this repository and create a new pull request to contribute to it.
+## Credits
 
-If you notice any errors, please create a new issue on GitHub.
+This project is forked from [vantezzen/skip-silence](https://github.com/vantezzen/skip-silence) by [vantezzen](https://github.com/vantezzen).
+
+Original work inspired by CaryKH's [automatic on-the-fly video editing tool](https://www.youtube.com/watch?v=DQ8orIurGxw).
 
 ## License
 
-Licensed under the [MIT License](LICENSE)
+[MIT License](LICENSE) — Copyright (c) 2019 Michael Xieyang Liu
